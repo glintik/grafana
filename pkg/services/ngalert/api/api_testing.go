@@ -16,6 +16,7 @@ import (
 	"github.com/grafana/grafana/pkg/setting"
 	"github.com/grafana/grafana/pkg/tsdb"
 	"github.com/grafana/grafana/pkg/util"
+	"gopkg.in/macaron.v1"
 )
 
 type TestingApiSrv struct {
@@ -32,7 +33,7 @@ func (srv TestingApiSrv) RouteTestReceiverConfig(c *models.ReqContext, body apim
 }
 
 func (srv TestingApiSrv) RouteTestRuleConfig(c *models.ReqContext, body apimodels.TestRulePayload) response.Response {
-	recipient := c.Params("Recipient")
+	recipient := macaron.Vars(c.Req)["Recipient"]
 	if recipient == apimodels.GrafanaBackend.String() {
 		if body.Type() != apimodels.GrafanaBackend || body.GrafanaManagedCondition == nil {
 			return ErrResp(http.StatusBadRequest, errors.New("unexpected payload"), "")

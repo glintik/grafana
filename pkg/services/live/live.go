@@ -39,6 +39,7 @@ import (
 	"github.com/centrifugal/centrifuge"
 	"github.com/grafana/grafana-plugin-sdk-go/backend"
 	"github.com/grafana/grafana-plugin-sdk-go/live"
+	"gopkg.in/macaron.v1"
 	"gopkg.in/redis.v5"
 )
 
@@ -289,7 +290,7 @@ func ProvideService(plugCtxProvider *plugincontext.Provider, cfg *setting.Cfg, r
 	g.pushWebsocketHandler = func(ctx *models.ReqContext) {
 		user := ctx.SignedInUser
 		newCtx := livecontext.SetContextSignedUser(ctx.Req.Context(), user)
-		newCtx = livecontext.SetContextStreamID(newCtx, ctx.Params(":streamId"))
+		newCtx = livecontext.SetContextStreamID(newCtx, macaron.Vars(ctx.Req)[":streamId"])
 		r := ctx.Req.WithContext(newCtx)
 		pushWSHandler.ServeHTTP(ctx.Resp, r)
 	}
@@ -780,7 +781,7 @@ func (g *GrafanaLive) HandleListHTTP(c *models.ReqContext) response.Response {
 
 // HandleInfoHTTP special http response for
 func (g *GrafanaLive) HandleInfoHTTP(ctx *models.ReqContext) response.Response {
-	path := ctx.Params("*")
+	path := macaron.Vars(ctx.Req)["*"]
 	if path == "grafana/dashboards/gitops" {
 		return response.JSON(200, util.DynMap{
 			"active": g.GrafanaScope.Dashboards.HasGitOpsObserver(ctx.SignedInUser.OrgId),

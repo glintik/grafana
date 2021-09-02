@@ -12,6 +12,7 @@ import (
 	"github.com/grafana/grafana/pkg/services/live/convert"
 	"github.com/grafana/grafana/pkg/services/live/pushurl"
 	"github.com/grafana/grafana/pkg/setting"
+	"gopkg.in/macaron.v1"
 )
 
 var (
@@ -43,7 +44,7 @@ func (g *Gateway) Run(ctx context.Context) error {
 }
 
 func (g *Gateway) Handle(ctx *models.ReqContext) {
-	streamID := ctx.Params(":streamId")
+	streamID := macaron.Vars(ctx.Req)[":streamId"]
 
 	stream, err := g.GrafanaLive.ManagedStreamRunner.GetOrCreateStream(ctx.SignedInUser.OrgId, streamID)
 	if err != nil {
