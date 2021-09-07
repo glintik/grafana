@@ -246,7 +246,7 @@ func (hs *HTTPServer) ImportDashboard(c *models.ReqContext, apiCmd dtos.ImportDa
 //
 // /api/plugins/:pluginId/metrics
 func (hs *HTTPServer) CollectPluginMetrics(c *models.ReqContext) response.Response {
-	pluginID := macaron.Vars(c.Req)["pluginId"]
+	pluginID := macaron.Vars(c.Req)[":pluginId"]
 	plugin := hs.PluginManager.GetPlugin(pluginID)
 	if plugin == nil {
 		return response.Error(404, "Plugin not found", nil)
@@ -267,7 +267,7 @@ func (hs *HTTPServer) CollectPluginMetrics(c *models.ReqContext) response.Respon
 //
 // /public/plugins/:pluginId/*
 func (hs *HTTPServer) GetPluginAssets(c *models.ReqContext) {
-	pluginID := macaron.Vars(c.Req)["pluginId"]
+	pluginID := macaron.Vars(c.Req)[":pluginId"]
 	plugin := hs.PluginManager.GetPlugin(pluginID)
 	if plugin == nil {
 		c.JsonApiErr(404, "Plugin not found", nil)
@@ -319,7 +319,7 @@ func (hs *HTTPServer) GetPluginAssets(c *models.ReqContext) {
 // CheckHealth returns the health of a plugin.
 // /api/plugins/:pluginId/health
 func (hs *HTTPServer) CheckHealth(c *models.ReqContext) response.Response {
-	pluginID := macaron.Vars(c.Req)["pluginId"]
+	pluginID := macaron.Vars(c.Req)[":pluginId"]
 
 	pCtx, found, err := hs.PluginContextProvider.Get(pluginID, "", c.SignedInUser, false)
 	if err != nil {
@@ -361,7 +361,7 @@ func (hs *HTTPServer) CheckHealth(c *models.ReqContext) response.Response {
 //
 // /api/plugins/:pluginId/resources/*
 func (hs *HTTPServer) CallResource(c *models.ReqContext) {
-	pluginID := macaron.Vars(c.Req)["pluginId"]
+	pluginID := macaron.Vars(c.Req)[":pluginId"]
 
 	pCtx, found, err := hs.PluginContextProvider.Get(pluginID, "", c.SignedInUser, false)
 	if err != nil {
@@ -380,7 +380,7 @@ func (hs *HTTPServer) GetPluginErrorsList(_ *models.ReqContext) response.Respons
 }
 
 func (hs *HTTPServer) InstallPlugin(c *models.ReqContext, dto dtos.InstallPluginCommand) response.Response {
-	pluginID := macaron.Vars(c.Req)["pluginId"]
+	pluginID := macaron.Vars(c.Req)[":pluginId"]
 
 	err := hs.PluginManager.Install(c.Req.Context(), pluginID, dto.Version)
 	if err != nil {
@@ -411,7 +411,7 @@ func (hs *HTTPServer) InstallPlugin(c *models.ReqContext, dto dtos.InstallPlugin
 }
 
 func (hs *HTTPServer) UninstallPlugin(c *models.ReqContext) response.Response {
-	pluginID := macaron.Vars(c.Req)["pluginId"]
+	pluginID := macaron.Vars(c.Req)[":pluginId"]
 
 	err := hs.PluginManager.Uninstall(c.Req.Context(), pluginID)
 	if err != nil {
